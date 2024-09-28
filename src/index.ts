@@ -7,7 +7,7 @@ const app = new Hono()
 
 app.route("/login", loginRouter)
 app.route("/register", registerRouter)
-app.route("todos", todosRouter)
+app.route("/todos", todosRouter)
 
 app.get('/', (c) => {
   return c.text('Hello Hono!')
