@@ -4,8 +4,8 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const usersTable = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  username: text("username").unique(),
-  password: text("password").notNull(), // stored as the hash
+  username: text("username").unique().notNull(),
+  passwordHash: text("password").notNull(), // stored as the hash
   salt: text("salt").notNull(),
   // email: text("email").unique(),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
@@ -17,8 +17,8 @@ export const usersTable = sqliteTable("users", {
     .$onUpdateFn(() => new Date()),
 });
 
-export type SelectUsers = typeof usersTable.$inferSelect
-export type InsertUsers = typeof usersTable.$inferInsert
+export type SelectUser = typeof usersTable.$inferSelect
+export type InsertUser = typeof usersTable.$inferInsert
 
 export const sessionsTable = sqliteTable("sessions", {
   id: text("id").primaryKey(),
@@ -28,8 +28,8 @@ export const sessionsTable = sqliteTable("sessions", {
   expiresAt: integer("expires_at").notNull(),
 }) 
 
-export type SelectSessions = typeof sessionsTable.$inferSelect
-export type InsertSessions = typeof sessionsTable.$inferInsert
+export type SelectSession = typeof sessionsTable.$inferSelect
+export type InsertSession = typeof sessionsTable.$inferInsert
 
 export const todosTable = sqliteTable("todos", {
   id: integer("id").primaryKey({ autoIncrement: true }),
