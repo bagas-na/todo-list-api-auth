@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { Hono } from "hono";
 import { generateIdFromEntropySize } from "lucia";
 import { lucia } from "../db/lucia";
@@ -20,20 +21,40 @@ register.post("/", async (c) => {
   }
 
   if (contentType.includes("application/json")) {
+    console.log(JSON.stringify({contentType}))
     const json = await c.req.json<{ username: string; password: string }>();
+    console.log(JSON.stringify({json}))
+    // To do, form validation using zod
+    if (!json || typeof json.username !== "string" || typeof json.password !== "string") {
+      return new Response("Invalid username or pasword", {
+        status: 400,
+      });
+    }
+
     username = json.username;
     password = json.password;
   } else if (contentType.includes("multipart/form-data")) {
+    console.log(JSON.stringify({contentType}))
     const request = await c.req.formData();
+    console.log(JSON.stringify({request}))
     // To do, form validation using zod
-    username = String(request.get("username"));
-    password = String(request.get("password"));
+    const usernameValue = request.get("username");
+    const passwordValue = request.get("password");
+    if (typeof usernameValue !== "string" || typeof passwordValue !== "string") {
+      return new Response("Invalid username or password", {
+        status: 400,
+      });
+    }
+    username = usernameValue;
+    password = passwordValue;
   }
 
-  const salt = generateIdFromEntropySize(10); // 16 characters long
+  const salt = crypto.randomBytes(64).toString('base64')
+  console.log(JSON.stringify({salt}))
   const passwordHash = await hashPassword(password, salt);
 
   try {
+    console.log(`Inserting userdata: ${JSON.stringify({username, passwordHash, salt})}`)
     const insertedUser = await insertUser({ username, passwordHash, salt });
 
     if (insertedUser === null) {
