@@ -1,4 +1,3 @@
-import { SQLiteSessionTable } from "@lucia-auth/adapter-drizzle";
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
@@ -11,7 +10,7 @@ export const usersTable = sqliteTable("users", {
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
-  updatedAt: integer("created_at", { mode: "timestamp_ms" })
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`)
     .$onUpdateFn(() => new Date()),
@@ -41,7 +40,7 @@ export const todosTable = sqliteTable("todos", {
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
-  updatedAt: integer("created_at", { mode: "timestamp_ms" })
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`)
     .$onUpdateFn(() => new Date()),
