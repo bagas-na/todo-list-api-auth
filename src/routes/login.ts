@@ -7,7 +7,7 @@ const login = new Hono();
 
 login.get("/", (c) => c.text("Login attempt"));
 
-login.post("/login", async (c: Context) => {
+login.post("/", async (c: Context) => {
   let username = "";
   let password = "";
   const contentType = c.req.header("Content-Type");

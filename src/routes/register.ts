@@ -21,9 +21,10 @@ register.post("/", async (c) => {
   }
 
   if (contentType.includes("application/json")) {
-    console.log(JSON.stringify({contentType}))
+    console.log(JSON.stringify({ contentType }));
     const json = await c.req.json<{ username: string; password: string }>();
-    console.log(JSON.stringify({json}))
+    console.log(JSON.stringify({ json }));
+
     // To do, form validation using zod
     if (!json || typeof json.username !== "string" || typeof json.password !== "string") {
       return new Response("Invalid username or pasword", {
@@ -34,9 +35,11 @@ register.post("/", async (c) => {
     username = json.username;
     password = json.password;
   } else if (contentType.includes("multipart/form-data")) {
-    console.log(JSON.stringify({contentType}))
+    console.log(JSON.stringify({ contentType }));
+
     const request = await c.req.formData();
-    console.log(JSON.stringify({request}))
+    console.log(JSON.stringify({ request }));
+
     // To do, form validation using zod
     const usernameValue = request.get("username");
     const passwordValue = request.get("password");
@@ -45,17 +48,23 @@ register.post("/", async (c) => {
         status: 400,
       });
     }
+
     username = usernameValue;
     password = passwordValue;
+  } else {
+    return new Response("Invalid Content-type. Supports application/json and multipart/form-data", {
+      status: 400,
+    });
   }
 
-  const salt = crypto.randomBytes(64).toString('base64')
-  console.log(JSON.stringify({salt}))
+  const salt = crypto.randomBytes(64).toString("base64");
+  console.log(JSON.stringify({ salt }));
   const passwordHash = await hashPassword(password, salt);
 
   try {
-    console.log(`Inserting userdata: ${JSON.stringify({username, passwordHash, salt})}`)
+    console.log(`Inserting userdata: ${JSON.stringify({ username, passwordHash, salt })}`);
     const insertedUser = await insertUser({ username, passwordHash, salt });
+    console.log(`Inserted user: ${JSON.stringify(insertedUser)}`)
 
     if (insertedUser === null) {
       return new Response("Failed to register user", {
@@ -77,8 +86,8 @@ register.post("/", async (c) => {
     });
   } catch {
     // db error, email taken, etc
-    return new Response("Username already used", {
-      status: 400,
+    return new Response("Error registering new user", {
+      status: 500,
     });
   }
 });
